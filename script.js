@@ -2,7 +2,7 @@
 LỚP TOÁN THẦY LỰC - CƠ SỞ DỮ LIỆU TỰ ĐỘNG LƯU TRỰC TIẾP
 ========================================== */
 
-// Danh sách dữ liệu học sinh dành riêng cho LỚP 9
+// Dữ liệu học sinh LỚP 9
 const class9Students = {
     "111111": { name: "Nguyễn Thị Vân Anh", score: 0, comment: "Học tập tốt, tiếp tục phát huy.", tuition: "290.000 VNĐ" },
     "151212": { name: "Lê Qúy Việt", score: 3.0, comment: "Hay nói chuyện riêng trong giờ, không chú ý nghe giảng bài, về nhà không làm bài tập.", tuition: "0 VNĐ" },
@@ -19,15 +19,29 @@ const class9Students = {
     "121212": { name: "Lê Thị Thùy Trang", score: 4.0, comment: "Hiểu bài chưa nhanh, hay mất tập trung và mất trật tự. Cần chú ý bài giảng hơn.", tuition: "340.000 VNĐ" }
 };
 
-// Phân chia dữ liệu: Lớp 9 có danh sách đầy đủ, Lớp 6, 7, 8 bắt đầu rỗng
+// Dữ liệu học sinh LỚP 8 (Cập nhật từ bảng ảnh)
+const class8Students = {
+    "123456": { name: "Nguyễn Quang Vinh", score: 3.0, comment: "Hay mất tập trung không nghe giảng và làm bài tập. Cần chú ý hơn rất nhiều.", tuition: "290.000 VNĐ" },
+    "233211": { name: "Nguyễn Thị Thu Hằng", score: 6.5, comment: "Tiếp thu nhanh, tuy nhiên còn hay mất tập trung và mất trật tự.", tuition: "290.000 VNĐ" },
+    "923820": { name: "Nguyễn Thùy Linh", score: 2.0, comment: "Không theo dõi bài, hay ngủ trong lớp. Cần học nghiêm chỉnh hơn.", tuition: "0 VNĐ" },
+    "280313": { name: "Nguyễn Thị Huệ", score: 9.5, comment: "Tiếp thu bài tốt, ham học hỏi.", tuition: "250.000 VNĐ" },
+    "000013": { name: "Nguyễn Thị Ngọc Anh (a)", score: 10.0, comment: "Tiếp thu bài tốt, ham học hỏi.", tuition: "330.000 VNĐ" },
+    "121314": { name: "Nguyễn Thị Kim Ngân", score: 6.5, comment: "Tiếp thu bài ở mức khá. Hay mất trật tự trong giờ. Cần nghiêm túc hơn.", tuition: "370.000 VNĐ" },
+    "915392": { name: "Nguyễn Anh Thư", score: 7.0, comment: "Tiếp thu bài mức khá, thường xuyên mất tập trung. Cần chú ý hơn.", tuition: "370.000 VNĐ" },
+    "013579": { name: "Nguyễn Văn Phương", score: 1.5, comment: "Không tập trung vào bài học,hay ngủ trong lớp, nghỉ học bừa bãi không phép. Cần chỉnh đốn ngay.", tuition: "290.000 VNĐ" },
+    "554407": { name: "Nguyễn Công Việt", score: 10.0, comment: "Tiếp thu bài tốt, ham học hỏi.", tuition: "0 VNĐ" },
+    "555555": { name: "Nguyễn Thị Anh Thư", score: 0, comment: "", tuition: "0 VNĐ" }
+};
+
+// Tự động phân chia dữ liệu từng khối lớp
 const defaultData = {
     "9": class9Students,
-    "8": {},
+    "8": class8Students,
     "7": {},
     "6": {}
 };
 
-// Tự động gán dữ liệu này vào hệ thống
+// Lưu trực tiếp vào bộ nhớ để tất cả người dùng thấy ngay
 let classDatabase = defaultData;
 localStorage.setItem("thayLuc_multiclass_db", JSON.stringify(classDatabase));
 
@@ -299,8 +313,8 @@ if (downloadTemplateBtn) {
         const currentClass = adminClassSelect.value;
         const templateData = [
             ["Mã Học Sinh", "Họ Và Tên", "Điểm Số", "Nhận Xét", "Học Phí Cần Nộp"],
-            ["111111", "Nguyễn Thị Vân Anh", 0, "Học tập tốt, tiếp tục phát huy.", 290000],
-            ["151212", "Lê Qúy Việt", 3.0, "Hay nói chuyện riêng trong giờ...", 0]
+            ["123456", "Nguyễn Quang Vinh", 3.0, "Hay mất tập trung...", 290000],
+            ["280313", "Nguyễn Thị Huệ", 9.5, "Tiếp thu bài tốt...", 250000]
         ];
         const ws = XLSX.utils.aoa_to_sheet(templateData);
         const wb = XLSX.utils.book_new();

@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LỚP TOÁN THẦY LỰC - LỚP 9 | Tra cứu kết quả thi</title>
+    <title>LỚP TOÁN THẦY LỰC | Tra cứu kết quả thi</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Thư viện hỗ trợ đọc file Excel (.xlsx) -->
+    <!-- Thư viện đọc file Excel (.xlsx) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
 <!-- THANH HEADER ĐỈNH TRANG -->
 <header class="top-header">
-    <div class="brand-title">
-        📐 LỚP TOÁN THẦY LỰC - LỚP 9
+    <div class="brand-title" id="headerTitle">
+        📐 LỚP TOÁN THẦY LỰC
     </div>
     <button class="admin-login-btn" id="adminLoginBtn">
         🔒 TRUY CẬP ADMIN
@@ -28,7 +28,18 @@
     <section class="card search-card" id="searchSection">
         <div class="logo">🎓</div>
         <h1>TRA CỨU KẾT QUẢ THI</h1>
-        <p class="subtitle">Vui lòng nhập mã số học sinh để xem kết quả</p>
+        <p class="subtitle">Vui lòng chọn lớp và nhập mã số học sinh</p>
+
+        <!-- BỔ SUNG CHỌN LỚP -->
+        <div class="input-group">
+            <label for="classSelect">Chọn khối lớp</label>
+            <select id="classSelect" class="styled-select">
+                <option value="9">Lớp 9</option>
+                <option value="8">Lớp 8</option>
+                <option value="7">Lớp 7</option>
+                <option value="6">Lớp 6</option>
+            </select>
+        </div>
 
         <div class="input-group">
             <label for="studentId">Mã số học sinh</label>
@@ -45,7 +56,7 @@
     <section class="card result-card hidden" id="resultSection">
         <div class="result-header">
             <div class="logo">🎓</div>
-            <h1>KẾT QUẢ THI</h1>
+            <h1 id="resultClassTitle">KẾT QUẢ THI - LỚP 9</h1>
         </div>
 
         <div class="student-info">
@@ -56,6 +67,10 @@
             <div class="info-row">
                 <span>Mã số học sinh</span>
                 <strong id="resultStudentId"></strong>
+            </div>
+            <div class="info-row">
+                <span>Khối lớp</span>
+                <strong id="resultClassName"></strong>
             </div>
         </div>
 
@@ -84,10 +99,21 @@
             <button class="close-admin-btn" id="closeAdminBtn">Đóng Admin</button>
         </div>
 
+        <!-- BỔ SUNG CHỌN LỚP CẦN QUẢN LÝ -->
+        <div class="admin-class-selector">
+            <label for="adminClassSelect"><b>Đang quản lý dữ liệu cho:</b></label>
+            <select id="adminClassSelect" class="styled-select highlight-select">
+                <option value="9">LỚP 9</option>
+                <option value="8">LỚP 8</option>
+                <option value="7">LỚP 7</option>
+                <option value="6">LỚP 6</option>
+            </select>
+        </div>
+
         <!-- CÁCH 1: IMPORT FILE EXCEL -->
         <div class="admin-block">
             <h3>📂 Cách 1: Import file Excel / CSV</h3>
-            <p class="admin-tip">File Excel gồm 4 cột theo thứ tự: <b>Mã HS | Họ và Tên | Điểm Số | Nhận Xét</b></p>
+            <p class="admin-tip">File Excel gồm 4 cột: <b>Mã HS | Họ và Tên | Điểm Số | Nhận Xét</b> (Dữ liệu sẽ thêm vào lớp đang chọn ở trên)</p>
             <div class="excel-import-box">
                 <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv">
                 <button class="btn-secondary" id="downloadTemplateBtn">Tải File Excel Mẫu</button>
@@ -125,7 +151,7 @@
 
         <!-- DANH SÁCH HỌC SINH HIỆN CÓ -->
         <div class="admin-block">
-            <h3>📋 Danh sách học sinh hiện có (<span id="totalStudentsCount">0</span>)</h3>
+            <h3>📋 Danh sách học sinh <span id="currentClassLabel">Lớp 9</span> (<span id="totalStudentsCount">0</span> em)</h3>
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
@@ -148,7 +174,7 @@
 </main>
 
 <footer>
-    <p>© 2026 - LỚP TOÁN THẦY LỰC - LỚP 9 | Hệ thống tra cứu điểm thi</p>
+    <p>© 2026 - LỚP TOÁN THẦY LỰC | Hệ thống tra cứu điểm thi</p>
 </footer>
 
 <script src="script.js"></script>

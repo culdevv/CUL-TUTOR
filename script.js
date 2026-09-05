@@ -1,52 +1,55 @@
 /* ==========================================
-LỚP TOÁN THẦY LỰC - LỚP 9
-DỮ LIỆU BẮT ĐẦU MẶC ĐỊNH
+LỚP TOÁN THẦY LỰC - CƠ SỞ DỮ LIỆU TÁCH BIỆT THEO LỚP
 ========================================== */
 
-const defaultStudents = {
-    "20233513": {
-        name: "Nguyễn Văn A",
-        score: 8.5,
-        comment: "Em có kết quả học tập tốt. Cần tiếp tục phát huy khả năng và duy trì tinh thần học tập."
+const defaultData = {
+    "9": {
+        "20233513": { name: "Nguyễn Văn A (Lớp 9)", score: 8.5, comment: "Em có kết quả học tập tốt." },
+        "20233514": { name: "Trần Văn B (Lớp 9)", score: 7.25, comment: "Cần luyện tập thêm bài tập nâng cao." }
     },
-    "20233514": {
-        name: "Trần Văn B",
-        score: 7.25,
-        comment: "Em đã nắm được kiến thức cơ bản. Cần dành thêm thời gian luyện tập các bài tập nâng cao."
+    "8": {
+        "8001": { name: "Lê Văn C (Lớp 8)", score: 9.0, comment: "Bài làm xuất sắc, tư duy tốt." }
     },
-    "20233515": {
-        name: "Lê Văn C",
-        score: 9.0,
-        comment: "Em có kết quả rất tốt. Bài làm chính xác và trình bày rõ ràng. Tiếp tục phát huy."
+    "7": {
+        "7001": { name: "Phạm Văn D (Lớp 7)", score: 8.0, comment: "Trình bày cẩn thận, rõ ràng." }
+    },
+    "6": {
+        "6001": { name: "Hoàng Văn E (Lớp 6)", score: 8.5, comment: "Hoàn thành tốt bài thi." }
     }
 };
 
-/* Khởi tạo từ LocalStorage hoặc dữ liệu mặc định */
-let students = JSON.parse(localStorage.getItem("thayLuc_students")) || defaultStudents;
+/* Đọc dữ liệu từ LocalStorage hoặc gán mặc định */
+let classDatabase = JSON.parse(localStorage.getItem("thayLuc_multiclass_db")) || defaultData;
 
-function saveToLocalStorage() {
-    localStorage.setItem("thayLuc_students", JSON.stringify(students));
+function saveDatabase() {
+    localStorage.setItem("thayLuc_multiclass_db", JSON.stringify(classDatabase));
     renderAdminTable();
 }
 
-/* LẤY CÁC PHẦN TỬ DOM */
+/* LẤY DOM ELEMENTS */
 const searchSection = document.getElementById("searchSection");
 const resultSection = document.getElementById("resultSection");
 const adminSection = document.getElementById("adminSection");
 
+const classSelect = document.getElementById("classSelect");
 const studentIdInput = document.getElementById("studentId");
 const searchButton = document.getElementById("searchButton");
 const errorMessage = document.getElementById("errorMessage");
+const headerTitle = document.getElementById("headerTitle");
 
 const studentName = document.getElementById("studentName");
 const resultStudentId = document.getElementById("resultStudentId");
+const resultClassName = document.getElementById("resultClassName");
+const resultClassTitle = document.getElementById("resultClassTitle");
 const studentScore = document.getElementById("studentScore");
 const teacherComment = document.getElementById("teacherComment");
 const backButton = document.getElementById("backButton");
 
-/* ADMIN DOM */
+/* ADMIN DOM ELEMENTS */
 const adminLoginBtn = document.getElementById("adminLoginBtn");
 const closeAdminBtn = document.getElementById("closeAdminBtn");
+const adminClassSelect = document.getElementById("adminClassSelect");
+const currentClassLabel = document.getElementById("currentClassLabel");
 const studentForm = document.getElementById("studentForm");
 const formStudentId = document.getElementById("formStudentId");
 const formStudentName = document.getElementById("formStudentName");
@@ -58,10 +61,16 @@ const totalStudentsCount = document.getElementById("totalStudentsCount");
 const excelFileInput = document.getElementById("excelFileInput");
 const downloadTemplateBtn = document.getElementById("downloadTemplateBtn");
 
+/* Đổi tiêu đề Header khi đổi chọn lớp ở màn hình ngoài */
+classSelect.addEventListener("change", () => {
+    headerTitle.textContent = `📐 LỚP TOÁN THẦY LỰC - LỚP ${classSelect.value}`;
+});
+
 /* ==========================================
 HÀM TRA CỨU HỌC SINH
 ========================================== */
 function searchResult() {
+    const selectedClass = classSelect.value;
     const studentId = studentIdInput.value.trim();
     errorMessage.textContent = "";
 
@@ -70,15 +79,19 @@ function searchResult() {
         return;
     }
 
-    const student = students[studentId];
+    const currentClassData = classDatabase[selectedClass] || {};
+    const student = currentClassData[studentId];
 
     if (!student) {
-        errorMessage.textContent = "Không tìm thấy kết quả của mã số: " + studentId;
+        errorMessage.textContent = `Không tìm thấy mã số ${studentId} trong dữ liệu Lớp ${selectedClass}!`;
         return;
     }
 
+    /* Đưa thông tin lên giao diện */
     studentName.textContent = student.name;
     resultStudentId.textContent = studentId;
+    resultClassName.textContent = `Lớp ${selectedClass}`;
+    resultClassTitle.textContent = `KẾT QUẢ THI - LỚP ${selectedClass}`;
     studentScore.textContent = student.score;
     teacherComment.textContent = student.comment || "Chưa có nhận xét.";
 
@@ -108,13 +121,26 @@ closeAdminBtn.addEventListener("click", () => {
     resetForm();
 });
 
+adminClassSelect.addEventListener("change", () => {
+    renderAdminTable();
+    resetForm();
+});
+
 function renderAdminTable() {
+    const currentClass = adminClassSelect.value;
+    currentClassLabel.textContent = `Lớp ${currentClass}`;
+    
+    if (!classDatabase[currentClass]) {
+        classDatabase[currentClass] = {};
+    }
+
+    const classData = classDatabase[currentClass];
     studentTableBody.innerHTML = "";
-    const keys = Object.keys(students);
+    const keys = Object.keys(classData);
     totalStudentsCount.textContent = keys.length;
 
     keys.forEach(id => {
-        const s = students[id];
+        const s = classData[id];
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td><b>${id}</b></td>
@@ -128,7 +154,8 @@ function renderAdminTable() {
 }
 
 function editStudent(id) {
-    const s = students[id];
+    const currentClass = adminClassSelect.value;
+    const s = classDatabase[currentClass][id];
     if (s) {
         formStudentId.value = id;
         formStudentName.value = s.name;
@@ -140,6 +167,7 @@ function editStudent(id) {
 
 studentForm.addEventListener("submit", (e) => {
     e.preventDefault();
+    const currentClass = adminClassSelect.value;
     const id = formStudentId.value.trim();
     const name = formStudentName.value.trim();
     const score = parseFloat(formStudentScore.value);
@@ -150,18 +178,23 @@ studentForm.addEventListener("submit", (e) => {
         return;
     }
 
-    students[id] = { name, score, comment };
-    saveToLocalStorage();
+    if (!classDatabase[currentClass]) {
+        classDatabase[currentClass] = {};
+    }
+
+    classDatabase[currentClass][id] = { name, score, comment };
+    saveDatabase();
     resetForm();
-    alert("Đã lưu thông tin học sinh thành công!");
+    alert(`Đã lưu học sinh vào Lớp ${currentClass} thành công!`);
 });
 
 deleteStudentBtn.addEventListener("click", () => {
+    const currentClass = adminClassSelect.value;
     const id = formStudentId.value.trim();
-    if (id && students[id]) {
-        if (confirm(`Bạn có chắc chắn muốn xóa học sinh mã ${id}?`)) {
-            delete students[id];
-            saveToLocalStorage();
+    if (id && classDatabase[currentClass][id]) {
+        if (confirm(`Xóa học sinh mã ${id} khỏi Lớp ${currentClass}?`)) {
+            delete classDatabase[currentClass][id];
+            saveDatabase();
             resetForm();
         }
     }
@@ -173,11 +206,13 @@ function resetForm() {
 }
 
 /* ==========================================
-IMPORT EXCEL / CSV
+IMPORT EXCEL THEO TỪNG LỚP
 ========================================== */
 excelFileInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    const currentClass = adminClassSelect.value;
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -188,8 +223,11 @@ excelFileInput.addEventListener("change", (e) => {
             const worksheet = workbook.Sheets[firstSheetName];
             const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
+            if (!classDatabase[currentClass]) {
+                classDatabase[currentClass] = {};
+            }
+
             let count = 0;
-            // Bỏ qua tiêu đề dòng 0
             for (let i = 1; i < rows.length; i++) {
                 const row = rows[i];
                 if (row && row.length >= 3) {
@@ -199,16 +237,16 @@ excelFileInput.addEventListener("change", (e) => {
                     const comment = row[3] ? String(row[3]).trim() : "";
 
                     if (id && name && !isNaN(score)) {
-                        students[id] = { name, score, comment };
+                        classDatabase[currentClass][id] = { name, score, comment };
                         count++;
                     }
                 }
             }
-            saveToLocalStorage();
-            alert(`Đã import thành công ${count} học sinh từ file Excel!`);
+            saveDatabase();
+            alert(`Đã import thành công ${count} học sinh vào Lớp ${currentClass}!`);
             excelFileInput.value = "";
         } catch (err) {
-            alert("Đã xảy ra lỗi khi đọc file Excel. Vui lòng kiểm tra lại định dạng file!");
+            alert("Lỗi đọc file Excel! Hãy kiểm tra định dạng file.");
             console.error(err);
         }
     };
@@ -217,6 +255,7 @@ excelFileInput.addEventListener("change", (e) => {
 
 /* TẢI EXCEL MẪU */
 downloadTemplateBtn.addEventListener("click", () => {
+    const currentClass = adminClassSelect.value;
     const templateData = [
         ["Mã Học Sinh", "Họ Và Tên", "Điểm Số", "Nhận Xét"],
         ["20233513", "Nguyễn Văn A", 8.5, "Học tập tốt, tiếp tục phát huy."],
@@ -224,13 +263,11 @@ downloadTemplateBtn.addEventListener("click", () => {
     ];
     const ws = XLSX.utils.aoa_to_sheet(templateData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Danh_Sach");
-    XLSX.writeFile(wb, "Mau_Danh_Sach_Diem_Thay_Luc.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, `Danh_Sach_Lop_${currentClass}`);
+    XLSX.writeFile(wb, `Mau_Danh_Sach_Diem_Lop_${currentClass}.xlsx`);
 });
 
-/* ==========================================
-SỰ KIỆN KHÁC
-========================================== */
+/* SỰ KIỆN NÚT VÀ PHÍM */
 searchButton.addEventListener("click", searchResult);
 
 studentIdInput.addEventListener("keydown", (e) => {

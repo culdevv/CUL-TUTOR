@@ -4,17 +4,17 @@ LỚP TOÁN THẦY LỰC - CƠ SỞ DỮ LIỆU TÁCH BIỆT THEO LỚP
 
 const defaultData = {
     "9": {
-        "20233513": { name: "Nguyễn Văn A (Lớp 9)", score: 8.5, comment: "Em có kết quả học tập tốt." },
-        "20233514": { name: "Trần Văn B (Lớp 9)", score: 7.25, comment: "Cần luyện tập thêm bài tập nâng cao." }
+        "20233513": { name: "Nguyễn Văn A", score: 8.5, comment: "Em có kết quả học tập tốt." },
+        "20233514": { name: "Trần Văn B", score: 7.25, comment: "Cần luyện tập thêm bài tập nâng cao." }
     },
     "8": {
-        "8001": { name: "Lê Văn C (Lớp 8)", score: 9.0, comment: "Bài làm xuất sắc, tư duy tốt." }
+        "8001": { name: "Lê Văn C", score: 9.0, comment: "Bài làm xuất sắc, tư duy tốt." }
     },
     "7": {
-        "7001": { name: "Phạm Văn D (Lớp 7)", score: 8.0, comment: "Trình bày cẩn thận, rõ ràng." }
+        "7001": { name: "Phạm Văn D", score: 8.0, comment: "Trình bày cẩn thận, rõ ràng." }
     },
     "6": {
-        "6001": { name: "Hoàng Văn E (Lớp 6)", score: 8.5, comment: "Hoàn thành tốt bài thi." }
+        "6001": { name: "Hoàng Văn E", score: 8.5, comment: "Hoàn thành tốt bài thi." }
     }
 };
 
@@ -35,7 +35,6 @@ const classSelect = document.getElementById("classSelect");
 const studentIdInput = document.getElementById("studentId");
 const searchButton = document.getElementById("searchButton");
 const errorMessage = document.getElementById("errorMessage");
-const headerTitle = document.getElementById("headerTitle");
 
 const studentName = document.getElementById("studentName");
 const resultStudentId = document.getElementById("resultStudentId");
@@ -60,11 +59,6 @@ const studentTableBody = document.getElementById("studentTableBody");
 const totalStudentsCount = document.getElementById("totalStudentsCount");
 const excelFileInput = document.getElementById("excelFileInput");
 const downloadTemplateBtn = document.getElementById("downloadTemplateBtn");
-
-/* Đổi tiêu đề Header khi đổi chọn lớp ở màn hình ngoài */
-classSelect.addEventListener("change", () => {
-    headerTitle.textContent = `📐 LỚP TOÁN THẦY LỰC - LỚP ${classSelect.value}`;
-});
 
 /* ==========================================
 HÀM TRA CỨU HỌC SINH

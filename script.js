@@ -142,7 +142,7 @@ QUẢN LÝ ADMIN
 ========================================== */
 if (adminLoginBtn) {
     adminLoginBtn.addEventListener("click", () => {
-        const pass = prompt("Nhập mật khẩu truy cập Admin (Mặc định: 123456):");
+        const pass = prompt("Nhập mật khẩu truy cập Admin :");
         if (pass === "123456") {
             searchSection.classList.add("hidden");
             resultSection.classList.add("hidden");

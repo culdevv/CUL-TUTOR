@@ -185,7 +185,7 @@ button:hover {
 }
 
 /* =========================
-   RESULT SECTION & TUITION
+   RESULT SECTION
 ========================= */
 .student-info {
     background: #f8fafc;
@@ -207,7 +207,7 @@ button:hover {
 }
 
 .score-section {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .score-row {
@@ -215,32 +215,51 @@ button:hover {
     justify-content: space-between;
     align-items: center;
     padding: 14px 18px;
-    margin-bottom: 10px;
     border-radius: 12px;
     background: #f0f3ff;
 }
 
 .score-row strong {
     color: #5a67d8;
-    font-size: 20px;
-}
-
-.tuition-row {
-    background: #fffaf0;
-    border: 1px solid #feebc8;
-}
-
-.tuition-row strong {
-    color: #dd6b20;
-    font-size: 20px;
+    font-size: 22px;
 }
 
 .comment-section {
-    padding: 20px;
-    margin-bottom: 28px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
     border-radius: 14px;
     background: #fafbfd;
     border-left: 4px solid #667eea;
+}
+
+.comment-section h2 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.comment-section p {
+    font-size: 14px;
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+/* KHỐI HỌC PHÍ NHỎ DƯỚI NHẬN XÉT */
+.tuition-small-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    margin-bottom: 24px;
+    background: #fffaf0;
+    border: 1px solid #feebc8;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #744210;
+}
+
+.tuition-small-box strong {
+    color: #dd6b20;
+    font-size: 15px;
 }
 
 /* =========================

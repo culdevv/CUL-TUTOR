@@ -1,72 +1,35 @@
 /* ==========================================
-LỚP TOÁN THẦY LỰC - DỮ LIỆU TỰ ĐỘNG ĐỒNG BỘ GOOGLE SHEETS
+LỚP TOÁN THẦY LỰC - CƠ SỞ DỮ LIỆU TỰ ĐỘNG LƯU TRỰC TIẾP
 ========================================== */
 
-// 🔴 ĐÃ ĐIỀN ID GOOGLE SHEETS CỦA BẠN VÀO ĐÂY:
-const GOOGLE_SHEET_ID = "1ymRCe4ehSLWTULufggzkuKNSkIpJvm2FrGH0mbJXg5Q";
-
-const defaultData = {
-
+// Danh sách dữ liệu học sinh dành riêng cho LỚP 9
+const class9Students = {
+    "111111": { name: "Nguyễn Thị Vân Anh", score: 0, comment: "Học tập tốt, tiếp tục phát huy.", tuition: "290.000 VNĐ" },
+    "151212": { name: "Lê Qúy Việt", score: 3.0, comment: "Hay nói chuyện riêng trong giờ, không chú ý nghe giảng bài, về nhà không làm bài tập.", tuition: "0 VNĐ" },
+    "310212": { name: "Nguyễn Thị Yến Nhi", score: 7.0, comment: "Khả năng hiểu bài mức khá, chú ý cần trật tự và chú ý nghe giảng hơn.", tuition: "330.000 VNĐ" },
+    "201012": { name: "Nguyễn Thị Thu Hoài", score: 8.0, comment: "Ham học hỏi, chú ý nghe giảng và xây dựng bài tốt.", tuition: "330.000 VNĐ" },
+    "191212": { name: "Nguyễn Thị Hải Yến", score: 5.0, comment: "Học tập tốt, tiếp tục phát huy. Cần cố gắng làm bài tập đầy đủ hơn nữa.", tuition: "330.000 VNĐ" },
+    "304212": { name: "Trần Thị Kim Anh", score: 7.5, comment: "Khả năng hiểu bài mức khá, chú ý cần trật tự và chú ý nghe giảng hơn.", tuition: "250.000 VNĐ" },
+    "189204": { name: "Lê Thị Hà", score: 8.0, comment: "Học tập tốt, tiếp tục phát huy.", tuition: "0 VNĐ" },
+    "222222": { name: "Nguyễn Thị Phương Linh", score: 0, comment: "", tuition: "210.000 VNĐ" },
+    "101112": { name: "Vũ Bảo Ngọc", score: 8.5, comment: "Học tập tốt, tiếp tục phát huy.", tuition: "330.000 VNĐ" },
+    "290812": { name: "Vũ Thị Trà My", score: 5.0, comment: "Ham học hỏi, trật tự. Tuy nhiên cần làm bài tập về nhà đầy đủ hơn.", tuition: "290.000 VNĐ" },
+    "251212": { name: "Vũ Thị Thanh Trúc", score: 3.5, comment: "Hay nói chuyện riêng trong giờ, không chú ý nghe giảng bài, về nhà không làm bài tập.", tuition: "0 VNĐ" },
+    "333333": { name: "Vũ Đình Ngọc Anh", score: 0, comment: "", tuition: "380.000 VNĐ" },
+    "121212": { name: "Lê Thị Thùy Trang", score: 4.0, comment: "Hiểu bài chưa nhanh, hay mất tập trung và mất trật tự. Cần chú ý bài giảng hơn.", tuition: "340.000 VNĐ" }
 };
 
-/* Đọc dữ liệu từ LocalStorage hoặc gán mặc định */
-let classDatabase = JSON.parse(localStorage.getItem("thayLuc_multiclass_db")) || defaultData;
+// Phân chia dữ liệu: Lớp 9 có danh sách đầy đủ, Lớp 6, 7, 8 bắt đầu rỗng
+const defaultData = {
+    "9": class9Students,
+    "8": {},
+    "7": {},
+    "6": {}
+};
 
-/* ==========================================
-TẢI DỮ LIỆU AN TOÀN TỪ GOOGLE SHEETS (KHÔNG LO MẤT DỮ LIỆU)
-========================================== */
-async function syncFromGoogleSheets() {
-    if (!GOOGLE_SHEET_ID || GOOGLE_SHEET_ID.includes("1ymRCe4ehSLWTULufggzkuKNSkIpJvm2FrGH0mbJXg5Q")) return;
-
-    const classes = ["6", "7", "8", "9"];
-    let updatedAny = false;
-
-    for (let c of classes) {
-        const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${c}&t=${Date.now()}`;
-        try {
-            const response = await fetch(url);
-            if (!response.ok) continue;
-            const csvText = await response.text();
-            
-            const lines = csvText.split(/\r?\n/);
-            if (lines.length <= 1) continue;
-
-            const tempClassData = {};
-
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => cell.replace(/^"|"$/g, '').trim());
-                
-                if (row && row.length >= 3) {
-                    const id = row[0];
-                    const name = row[1];
-                    const score = parseFloat(row[2]);
-                    const comment = row[3] || "";
-                    const tuition = row[4] !== undefined ? row[4] : "0";
-
-                    if (id && name && !isNaN(score)) {
-                        tempClassData[id] = { name, score, comment, tuition };
-                    }
-                }
-            }
-
-            // CHỈ CẬP NHẬT KHI LẤY ĐƯỢC DỮ LIỆU THẬT
-            if (Object.keys(tempClassData).length > 0) {
-                classDatabase[c] = tempClassData;
-                updatedAny = true;
-            }
-        } catch (err) {
-            console.log(`Lớp ${c} giữ nguyên dữ liệu cũ do lỗi tải:`, err);
-        }
-    }
-
-    if (updatedAny) {
-        saveDatabase();
-    }
-}
-
-// Chạy tải dữ liệu khi mở web
-syncFromGoogleSheets();
+// Tự động gán dữ liệu này vào hệ thống
+let classDatabase = defaultData;
+localStorage.setItem("thayLuc_multiclass_db", JSON.stringify(classDatabase));
 
 function saveDatabase() {
     localStorage.setItem("thayLuc_multiclass_db", JSON.stringify(classDatabase));
@@ -141,6 +104,7 @@ function searchResult() {
         return;
     }
 
+    /* Đưa thông tin lên giao diện */
     studentName.textContent = student.name;
     resultStudentId.textContent = studentId;
     resultClassName.textContent = `Lớp ${selectedClass}`;
@@ -149,6 +113,7 @@ function searchResult() {
     studentTuition.textContent = formatTuition(student.tuition);
     teacherComment.textContent = student.comment || "Chưa có nhận xét.";
 
+    /* Tạo mã QR Momo tự động */
     if (qrImage) {
         qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=MoMo_0972824372_${studentId}`;
     }
@@ -334,8 +299,8 @@ if (downloadTemplateBtn) {
         const currentClass = adminClassSelect.value;
         const templateData = [
             ["Mã Học Sinh", "Họ Và Tên", "Điểm Số", "Nhận Xét", "Học Phí Cần Nộp"],
-            ["20233513", "Nguyễn Văn A", 8.5, "Học tập tốt, tiếp tục phát huy.", 500000],
-            ["20233514", "Trần Văn B", 7.25, "Cần làm thêm bài tập nâng cao.", 0]
+            ["111111", "Nguyễn Thị Vân Anh", 0, "Học tập tốt, tiếp tục phát huy.", 290000],
+            ["151212", "Lê Qúy Việt", 3.0, "Hay nói chuyện riêng trong giờ...", 0]
         ];
         const ws = XLSX.utils.aoa_to_sheet(templateData);
         const wb = XLSX.utils.book_new();

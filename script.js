@@ -1,20 +1,20 @@
 /* ==========================================
-LỚP TOÁN THẦY LỰC - CƠ SỞ DỮ LIỆU TÁCH BIỆT THEO LỚP
+LỚP TOÁN THẦY LỰC - DỮ LIỆU TÁCH BIỆT (ĐIỂM + HỌC PHÍ)
 ========================================== */
 
 const defaultData = {
     "9": {
-        "20233513": { name: "Nguyễn Văn A", score: 8.5, comment: "Em có kết quả học tập tốt." },
-        "20233514": { name: "Trần Văn B", score: 7.25, comment: "Cần luyện tập thêm bài tập nâng cao." }
+        "20233513": { name: "Nguyễn Văn A", score: 8.5, comment: "Em có kết quả học tập tốt.", tuition: "500.000 VNĐ" },
+        "20233514": { name: "Trần Văn B", score: 7.25, comment: "Cần luyện tập thêm bài tập nâng cao.", tuition: "0 VNĐ" }
     },
     "8": {
-        "8001": { name: "Lê Văn C", score: 9.0, comment: "Bài làm xuất sắc, tư duy tốt." }
+        "8001": { name: "Lê Văn C", score: 9.0, comment: "Bài làm xuất sắc, tư duy tốt.", tuition: "300.000 VNĐ" }
     },
     "7": {
-        "7001": { name: "Phạm Văn D", score: 8.0, comment: "Trình bày cẩn thận, rõ ràng." }
+        "7001": { name: "Phạm Văn D", score: 8.0, comment: "Trình bày cẩn thận, rõ ràng.", tuition: "0 VNĐ" }
     },
     "6": {
-        "6001": { name: "Hoàng Văn E", score: 8.5, comment: "Hoàn thành tốt bài thi." }
+        "6001": { name: "Hoàng Văn E", score: 8.5, comment: "Hoàn thành tốt bài thi.", tuition: "0 VNĐ" }
     }
 };
 
@@ -24,6 +24,14 @@ let classDatabase = JSON.parse(localStorage.getItem("thayLuc_multiclass_db")) ||
 function saveDatabase() {
     localStorage.setItem("thayLuc_multiclass_db", JSON.stringify(classDatabase));
     renderAdminTable();
+}
+
+/* Định dạng hiển thị học phí */
+function formatTuition(value) {
+    if (value === undefined || value === null || value === "") return "0 VNĐ";
+    let strVal = String(value).replace(/[^0-9]/g, "");
+    if (!strVal || strVal === "0") return "0 VNĐ";
+    return Number(strVal).toLocaleString('vi-VN') + " VNĐ";
 }
 
 /* LẤY DOM ELEMENTS */
@@ -41,6 +49,7 @@ const resultStudentId = document.getElementById("resultStudentId");
 const resultClassName = document.getElementById("resultClassName");
 const resultClassTitle = document.getElementById("resultClassTitle");
 const studentScore = document.getElementById("studentScore");
+const studentTuition = document.getElementById("studentTuition");
 const teacherComment = document.getElementById("teacherComment");
 const backButton = document.getElementById("backButton");
 
@@ -53,6 +62,7 @@ const studentForm = document.getElementById("studentForm");
 const formStudentId = document.getElementById("formStudentId");
 const formStudentName = document.getElementById("formStudentName");
 const formStudentScore = document.getElementById("formStudentScore");
+const formStudentTuition = document.getElementById("formStudentTuition");
 const formStudentComment = document.getElementById("formStudentComment");
 const deleteStudentBtn = document.getElementById("deleteStudentBtn");
 const studentTableBody = document.getElementById("studentTableBody");
@@ -87,6 +97,7 @@ function searchResult() {
     resultClassName.textContent = `Lớp ${selectedClass}`;
     resultClassTitle.textContent = `KẾT QUẢ THI - LỚP ${selectedClass}`;
     studentScore.textContent = student.score;
+    studentTuition.textContent = formatTuition(student.tuition);
     teacherComment.textContent = student.comment || "Chưa có nhận xét.";
 
     searchSection.classList.add("hidden");
@@ -140,6 +151,7 @@ function renderAdminTable() {
             <td><b>${id}</b></td>
             <td>${s.name}</td>
             <td><strong style="color: #5a67d8;">${s.score}</strong></td>
+            <td><span style="color: #dd6b20; font-weight: 600;">${formatTuition(s.tuition)}</span></td>
             <td>${s.comment || ""}</td>
             <td><button class="edit-btn" onclick="editStudent('${id}')">Sửa</button></td>
         `;
@@ -154,6 +166,7 @@ function editStudent(id) {
         formStudentId.value = id;
         formStudentName.value = s.name;
         formStudentScore.value = s.score;
+        formStudentTuition.value = s.tuition || "0";
         formStudentComment.value = s.comment || "";
         deleteStudentBtn.classList.remove("hidden");
     }
@@ -165,6 +178,7 @@ studentForm.addEventListener("submit", (e) => {
     const id = formStudentId.value.trim();
     const name = formStudentName.value.trim();
     const score = parseFloat(formStudentScore.value);
+    const tuition = formStudentTuition.value.trim();
     const comment = formStudentComment.value.trim();
 
     if (!id || !name || isNaN(score)) {
@@ -176,7 +190,7 @@ studentForm.addEventListener("submit", (e) => {
         classDatabase[currentClass] = {};
     }
 
-    classDatabase[currentClass][id] = { name, score, comment };
+    classDatabase[currentClass][id] = { name, score, comment, tuition };
     saveDatabase();
     resetForm();
     alert(`Đã lưu học sinh vào Lớp ${currentClass} thành công!`);
@@ -200,7 +214,7 @@ function resetForm() {
 }
 
 /* ==========================================
-IMPORT EXCEL THEO TỪNG LỚP
+IMPORT EXCEL THEO TỪNG LỚP (5 CỘT)
 ========================================== */
 excelFileInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
@@ -229,9 +243,10 @@ excelFileInput.addEventListener("change", (e) => {
                     const name = String(row[1]).trim();
                     const score = parseFloat(row[2]);
                     const comment = row[3] ? String(row[3]).trim() : "";
+                    const tuition = row[4] !== undefined ? String(row[4]).trim() : "0";
 
                     if (id && name && !isNaN(score)) {
-                        classDatabase[currentClass][id] = { name, score, comment };
+                        classDatabase[currentClass][id] = { name, score, comment, tuition };
                         count++;
                     }
                 }
@@ -251,9 +266,9 @@ excelFileInput.addEventListener("change", (e) => {
 downloadTemplateBtn.addEventListener("click", () => {
     const currentClass = adminClassSelect.value;
     const templateData = [
-        ["Mã Học Sinh", "Họ Và Tên", "Điểm Số", "Nhận Xét"],
-        ["20233513", "Nguyễn Văn A", 8.5, "Học tập tốt, tiếp tục phát huy."],
-        ["20233514", "Trần Văn B", 7.25, "Cần làm thêm bài tập nâng cao."]
+        ["Mã Học Sinh", "Họ Và Tên", "Điểm Số", "Nhận Xét", "Học Phí Cần Nộp"],
+        ["20233513", "Nguyễn Văn A", 8.5, "Học tập tốt, tiếp tục phát huy.", 500000],
+        ["20233514", "Trần Văn B", 7.25, "Cần làm thêm bài tập nâng cao.", 0]
     ];
     const ws = XLSX.utils.aoa_to_sheet(templateData);
     const wb = XLSX.utils.book_new();

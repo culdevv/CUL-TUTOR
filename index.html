@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LỚP TOÁN THẦY LỰC | Tra cứu kết quả thi</title>
+    <title>LỚP TOÁN THẦY LỰC | Tra cứu kết quả thi & Học phí</title>
     <link rel="stylesheet" href="style.css">
     <!-- Thư viện đọc file Excel (.xlsx) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -30,7 +30,6 @@
         <h1>TRA CỨU KẾT QUẢ THI</h1>
         <p class="subtitle">Vui lòng chọn lớp và nhập mã số học sinh</p>
 
-        <!-- CHỌN LỚP -->
         <div class="input-group">
             <label for="classSelect">Chọn khối lớp</label>
             <select id="classSelect" class="styled-select">
@@ -75,10 +74,15 @@
         </div>
 
         <div class="score-section">
-            <h2>📊 Kết quả</h2>
+            <h2>📊 Kết quả & Học phí</h2>
             <div class="score-row">
                 <span>Điểm số</span>
                 <strong id="studentScore"></strong>
+            </div>
+            <!-- BỔ SUNG HIỂN THỊ HỌC PHÍ -->
+            <div class="score-row tuition-row">
+                <span>Học phí còn lại</span>
+                <strong id="studentTuition">0 VNĐ</strong>
             </div>
         </div>
 
@@ -95,7 +99,7 @@
     ========================== -->
     <section class="card admin-card hidden" id="adminSection">
         <div class="admin-header">
-            <h2>⚙️ CẬP NHẬT ĐIỂM & NHẬN XẾT</h2>
+            <h2>⚙️ CẬP NHẬT ĐIỂM & HỌC PHÍ</h2>
             <button class="close-admin-btn" id="closeAdminBtn">Đóng Admin</button>
         </div>
 
@@ -113,7 +117,7 @@
         <!-- CÁCH 1: IMPORT FILE EXCEL -->
         <div class="admin-block">
             <h3>📂 Cách 1: Import file Excel / CSV</h3>
-            <p class="admin-tip">File Excel gồm 4 cột: <b>Mã HS | Họ và Tên | Điểm Số | Nhận Xét</b> (Dữ liệu sẽ thêm vào lớp đang chọn ở trên)</p>
+            <p class="admin-tip">File Excel gồm 5 cột: <b>Mã HS | Họ và Tên | Điểm Số | Nhận Xét | Học Phí Cần Nộp</b></p>
             <div class="excel-import-box">
                 <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv">
                 <button class="btn-secondary" id="downloadTemplateBtn">Tải File Excel Mẫu</button>
@@ -137,10 +141,14 @@
                         <label>Điểm số (*)</label>
                         <input type="number" step="0.1" id="formStudentScore" placeholder="VD: 8.5" required>
                     </div>
+                    <div class="form-group">
+                        <label>Học phí còn lại (VNĐ)</label>
+                        <input type="text" id="formStudentTuition" placeholder="VD: 500000 hoặc 0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Nhận xét của giáo viên</label>
-                    <textarea id="formStudentComment" rows="3" placeholder="Nhập nhận xét..."></textarea>
+                    <textarea id="formStudentComment" rows="2" placeholder="Nhập nhận xét..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn-success" id="saveStudentBtn">Lưu / Thêm học sinh</button>
@@ -159,6 +167,7 @@
                             <th>Mã HS</th>
                             <th>Họ tên</th>
                             <th>Điểm</th>
+                            <th>Học phí còn</th>
                             <th>Nhận xét</th>
                             <th>Thao tác</th>
                         </tr>
@@ -174,7 +183,7 @@
 </main>
 
 <footer>
-    <p>© 2026 - LỚP TOÁN THẦY LỰC | Hệ thống tra cứu điểm thi</p>
+    <p>© 2026 - LỚP TOÁN THẦY LỰC | Hệ thống tra cứu điểm thi & học phí</p>
 </footer>
 
 <script src="script.js"></script>

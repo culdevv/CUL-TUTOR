@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LỚP TOÁN THẦY LỰC | Tra cứu kết quả thi & Học phí</title>
+    
+    <!-- ICON CỦA TRANG WEB (Favicon) - Thay 'favicon.png' bằng file ảnh icon của bạn -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
     <link rel="stylesheet" href="style.css">
     <!-- Thư viện đọc file Excel (.xlsx) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -86,10 +90,23 @@
             <p id="teacherComment"></p>
         </div>
 
-        <!-- PHẦN HỌC PHÍ NHỎ NẰM DƯỚI NHẬN XÉT -->
-        <div class="tuition-small-box">
-            <span>💳 Học phí còn lại:</span>
-            <strong id="studentTuition">0 VNĐ</strong>
+        <!-- KHỐI HỌC PHÍ & MÃ QR THANH TOÁN (NẰM DƯỚI NHẬN XÉT) -->
+        <div class="payment-card">
+            <div class="tuition-info-row">
+                <span>💳 Học phí còn lại:</span>
+                <strong id="studentTuition">0 VNĐ</strong>
+            </div>
+
+            <div class="qr-payment-box">
+                <!-- Mã QR tự động hoặc bạn đổi src="qr.png" nếu có ảnh QR riêng -->
+                <img id="qrImage" src="qr.png" alt="Mã QR Thanh Toán">
+                <div class="qr-details">
+                    <p class="qr-title">📲 Chuyển khoản Học phí qua MoMo</p>
+                    <p class="account-num"><b>STK MoMo:</b> <span>0972824372</span></p>
+                    <p class="account-name"><b>Chủ TK:</b> LỚP TOÁN THẦY LỰC</p>
+                    <p class="transfer-note"><i>*Nội dung CK: [Mã HS] - [Tên Học Sinh]</i></p>
+                </div>
+            </div>
         </div>
 
         <button class="back-button" id="backButton">← TRA CỨU LẠI</button>
@@ -104,7 +121,6 @@
             <button class="close-admin-btn" id="closeAdminBtn">Đóng Admin</button>
         </div>
 
-        <!-- CHỌN LỚP CẦN QUẢN LÝ -->
         <div class="admin-class-selector">
             <label for="adminClassSelect"><b>Đang quản lý dữ liệu cho:</b></label>
             <select id="adminClassSelect" class="styled-select highlight-select">
@@ -158,7 +174,7 @@
             </form>
         </div>
 
-        <!-- DANH SÁCH HỌC SINH HIỆN CÓ -->
+        <!-- DANH SÁCH HỌC SINH -->
         <div class="admin-block">
             <h3>📋 Danh sách học sinh <span id="currentClassLabel">Lớp 9</span> (<span id="totalStudentsCount">0</span> em)</h3>
             <div class="table-wrapper">
@@ -174,7 +190,6 @@
                         </tr>
                     </thead>
                     <tbody id="studentTableBody">
-                        <!-- Dữ liệu render tự động -->
                     </tbody>
                 </table>
             </div>

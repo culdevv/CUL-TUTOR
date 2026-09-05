@@ -1,5 +1,5 @@
 /* ==========================================
-LỚP TOÁN THẦY LỰC - DỮ LIỆU TÁCH BIỆT (ĐIỂM + HỌC PHÍ)
+LỚP TOÁN THẦY LỰC - CƠ SỞ DỮ LIỆU TÁCH BIỆT (ĐIỂM + HỌC PHÍ)
 ========================================== */
 
 const defaultData = {
@@ -52,6 +52,7 @@ const studentScore = document.getElementById("studentScore");
 const studentTuition = document.getElementById("studentTuition");
 const teacherComment = document.getElementById("teacherComment");
 const backButton = document.getElementById("backButton");
+const qrImage = document.getElementById("qrImage");
 
 /* ADMIN DOM ELEMENTS */
 const adminLoginBtn = document.getElementById("adminLoginBtn");
@@ -99,6 +100,9 @@ function searchResult() {
     studentScore.textContent = student.score;
     studentTuition.textContent = formatTuition(student.tuition);
     teacherComment.textContent = student.comment || "Chưa có nhận xét.";
+
+    /* Tạo mã QR Momo tự động theo số điện thoại và nội dung chuyển khoản mã HS */
+    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=MoMo_0972824372_${studentId}`;
 
     searchSection.classList.add("hidden");
     adminSection.classList.add("hidden");

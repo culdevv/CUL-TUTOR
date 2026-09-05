@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LỚP TOÁN THẦY LỰC - LỚP 9 | Tra cứu kết quả thi</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Thư viện hỗ trợ đọc file Excel (.xlsx) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<!-- THANH HEADER ĐỈNH TRANG -->
+<header class="top-header">
+    <div class="brand-title">
+        📐 LỚP TOÁN THẦY LỰC - LỚP 9
+    </div>
+    <button class="admin-login-btn" id="adminLoginBtn">
+        🔒 TRUY CẬP ADMIN
+    </button>
+</header>
+
+<main class="container">
+
+    <!-- =========================
+         TRANG TRA CỨU HỌC SINH
+    ========================== -->
+    <section class="card search-card" id="searchSection">
+        <div class="logo">🎓</div>
+        <h1>TRA CỨU KẾT QUẢ THI</h1>
+        <p class="subtitle">Vui lòng nhập mã số học sinh để xem kết quả</p>
+
+        <div class="input-group">
+            <label for="studentId">Mã số học sinh</label>
+            <input type="text" id="studentId" placeholder="Ví dụ: 20233513" autocomplete="off">
+        </div>
+
+        <button id="searchButton">XEM KẾT QUẢ</button>
+        <p class="error-message" id="errorMessage"></p>
+    </section>
+
+    <!-- =========================
+         TRANG HIỂN THỊ KẾT QUẢ
+    ========================== -->
+    <section class="card result-card hidden" id="resultSection">
+        <div class="result-header">
+            <div class="logo">🎓</div>
+            <h1>KẾT QUẢ THI</h1>
+        </div>
+
+        <div class="student-info">
+            <div class="info-row">
+                <span>Họ và tên</span>
+                <strong id="studentName"></strong>
+            </div>
+            <div class="info-row">
+                <span>Mã số học sinh</span>
+                <strong id="resultStudentId"></strong>
+            </div>
+        </div>
+
+        <div class="score-section">
+            <h2>📊 Kết quả</h2>
+            <div class="score-row">
+                <span>Điểm số</span>
+                <strong id="studentScore"></strong>
+            </div>
+        </div>
+
+        <div class="comment-section">
+            <h2>💬 Nhận xét của giáo viên</h2>
+            <p id="teacherComment"></p>
+        </div>
+
+        <button class="back-button" id="backButton">← TRA CỨU LẠI</button>
+    </section>
+
+    <!-- =========================
+         TRANG QUẢN TRỊ ADMIN
+    ========================== -->
+    <section class="card admin-card hidden" id="adminSection">
+        <div class="admin-header">
+            <h2>⚙️ CẬP NHẬT ĐIỂM & NHẬN XẾT</h2>
+            <button class="close-admin-btn" id="closeAdminBtn">Đóng Admin</button>
+        </div>
+
+        <!-- CÁCH 1: IMPORT FILE EXCEL -->
+        <div class="admin-block">
+            <h3>📂 Cách 1: Import file Excel / CSV</h3>
+            <p class="admin-tip">File Excel gồm 4 cột theo thứ tự: <b>Mã HS | Họ và Tên | Điểm Số | Nhận Xét</b></p>
+            <div class="excel-import-box">
+                <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv">
+                <button class="btn-secondary" id="downloadTemplateBtn">Tải File Excel Mẫu</button>
+            </div>
+        </div>
+
+        <!-- CÁCH 2: NHẬP THỦ CÔNG -->
+        <div class="admin-block">
+            <h3>✏️ Cách 2: Nhập thủ công hoặc Chỉnh sửa</h3>
+            <form id="studentForm" class="admin-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mã số học sinh (*)</label>
+                        <input type="text" id="formStudentId" placeholder="VD: 20233513" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Họ và tên (*)</label>
+                        <input type="text" id="formStudentName" placeholder="VD: Nguyễn Văn A" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Điểm số (*)</label>
+                        <input type="number" step="0.1" id="formStudentScore" placeholder="VD: 8.5" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nhận xét của giáo viên</label>
+                    <textarea id="formStudentComment" rows="3" placeholder="Nhập nhận xét..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-success" id="saveStudentBtn">Lưu / Thêm học sinh</button>
+                    <button type="button" class="btn-danger hidden" id="deleteStudentBtn">Xóa học sinh này</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- DANH SÁCH HỌC SINH HIỆN CÓ -->
+        <div class="admin-block">
+            <h3>📋 Danh sách học sinh hiện có (<span id="totalStudentsCount">0</span>)</h3>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã HS</th>
+                            <th>Họ tên</th>
+                            <th>Điểm</th>
+                            <th>Nhận xét</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- Dữ liệu render tự động -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>© 2026 - LỚP TOÁN THẦY LỰC - LỚP 9 | Hệ thống tra cứu điểm thi</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

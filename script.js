@@ -1,39 +1,42 @@
 /* ==========================================
-LỚP TOÁN THẦY LỰC - CƠ SỞ DỮ LIỆU TÁCH BIỆT (ĐIỂM + HỌC PHÍ)
+LỚP TOÁN THẦY LỰC - DỮ LIỆU TỰ ĐỘNG ĐỒNG BỘ GOOGLE SHEETS
 ========================================== */
 
-// 🔴 THAY ID BẢNG TÍNH GOOGLE SHEETS CỦA BẠN VÀO ĐÂY:
+// 🔴 ĐÃ ĐIỀN ID GOOGLE SHEETS CỦA BẠN VÀO ĐÂY:
 const GOOGLE_SHEET_ID = "1ymRCe4ehSLWTULufggzkuKNSkIpJvm2FrGH0mbJXg5Q";
 
 const defaultData = {
-   
+
 };
 
 /* Đọc dữ liệu từ LocalStorage hoặc gán mặc định */
 let classDatabase = JSON.parse(localStorage.getItem("thayLuc_multiclass_db")) || defaultData;
 
 /* ==========================================
-TỰ ĐỘNG TẢI DỮ LIỆU TỪ GOOGLE SHEETS (NẾU CÓ GOOGLE_SHEET_ID)
+TẢI DỮ LIỆU AN TOÀN TỪ GOOGLE SHEETS (KHÔNG LO MẤT DỮ LIỆU)
 ========================================== */
 async function syncFromGoogleSheets() {
-    if (!GOOGLE_SHEET_ID || GOOGLE_SHEET_ID === "1ymRCe4ehSLWTULufggzkuKNSkIpJvm2FrGH0mbJXg5Q") return;
+    if (!GOOGLE_SHEET_ID || GOOGLE_SHEET_ID.includes("1ymRCe4ehSLWTULufggzkuKNSkIpJvm2FrGH0mbJXg5Q")) return;
 
     const classes = ["6", "7", "8", "9"];
+    let updatedAny = false;
+
     for (let c of classes) {
-        const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${c}`;
+        const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${c}&t=${Date.now()}`;
         try {
             const response = await fetch(url);
             if (!response.ok) continue;
             const csvText = await response.text();
             
-            const rows = csvText.split('\n').map(row => {
-                return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => cell.replace(/^"|"$/g, '').trim());
-            });
+            const lines = csvText.split(/\r?\n/);
+            if (lines.length <= 1) continue;
 
-            if (!classDatabase[c]) classDatabase[c] = {};
+            const tempClassData = {};
 
-            for (let i = 1; i < rows.length; i++) {
-                const row = rows[i];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => cell.replace(/^"|"$/g, '').trim());
+                
                 if (row && row.length >= 3) {
                     const id = row[0];
                     const name = row[1];
@@ -42,18 +45,27 @@ async function syncFromGoogleSheets() {
                     const tuition = row[4] !== undefined ? row[4] : "0";
 
                     if (id && name && !isNaN(score)) {
-                        classDatabase[c][id] = { name, score, comment, tuition };
+                        tempClassData[id] = { name, score, comment, tuition };
                     }
                 }
             }
+
+            // CHỈ CẬP NHẬT KHI LẤY ĐƯỢC DỮ LIỆU THẬT
+            if (Object.keys(tempClassData).length > 0) {
+                classDatabase[c] = tempClassData;
+                updatedAny = true;
+            }
         } catch (err) {
-            console.log(`Chưa tải được Sheet Lớp ${c}:`, err);
+            console.log(`Lớp ${c} giữ nguyên dữ liệu cũ do lỗi tải:`, err);
         }
     }
-    saveDatabase();
+
+    if (updatedAny) {
+        saveDatabase();
+    }
 }
 
-// Chạy tự động đồng bộ khi mở web
+// Chạy tải dữ liệu khi mở web
 syncFromGoogleSheets();
 
 function saveDatabase() {
@@ -129,7 +141,6 @@ function searchResult() {
         return;
     }
 
-    /* Đưa thông tin lên giao diện */
     studentName.textContent = student.name;
     resultStudentId.textContent = studentId;
     resultClassName.textContent = `Lớp ${selectedClass}`;
@@ -138,7 +149,6 @@ function searchResult() {
     studentTuition.textContent = formatTuition(student.tuition);
     teacherComment.textContent = student.comment || "Chưa có nhận xét.";
 
-    /* Tạo mã QR Momo tự động theo số điện thoại và nội dung chuyển khoản mã HS */
     if (qrImage) {
         qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=MoMo_0972824372_${studentId}`;
     }
